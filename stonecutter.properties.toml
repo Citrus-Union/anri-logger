@@ -1,0 +1,11 @@
+# Shared values, followed by per-Minecraft-version overrides.
+mod.id = "anri-logger"
+mod.name = "Anri Logger"
+mod.group = "com.anrilogger"
+mod.version = "1.2.3"
+deps.fabric_loader = "0.19.3"
+
+["26.1.2"]
+mod.mc_compat = "26.1.2"
+deps.fabric_api = "0.155.3+26.1.2"
+java.release = "25"

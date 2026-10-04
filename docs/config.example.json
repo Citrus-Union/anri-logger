@@ -1,0 +1,10 @@
+{
+  "permissionMode": "OP_ONLY",
+  "enableLgAlias": false,
+  "flushIntervalMillis": 1000,
+  "queueCapacity": 32768,
+  "pageSize": 10,
+  "maxQueryScan": 100000,
+  "queryCooldownMillis": 1000,
+  "maxTrackedScheduledTicks": 100000
+}

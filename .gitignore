@@ -1,0 +1,63 @@
+# Gradle and Stonecutter generated files (also applies to versions/*/build/)
+.gradle/
+.stonecutter/
+build/
+out/
+classes/
+/dist/
+*.class
+*.jar
+!gradle/wrapper/gradle-wrapper.jar
+
+# Minecraft development runs, test worlds and local server data
+run/
+runs/
+/config/
+/logs/
+/mods/
+/world/
+/world_*/
+/libraries/
+/server.properties
+/eula.txt
+*.db
+*.db.*
+*.log
+*.log.gz
+
+# Local credentials and environment settings
+.env
+.env.*
+!.env.example
+
+# IDE settings
+.idea/
+*.iml
+*.ipr
+*.iws
+.vscode/
+.settings/
+.classpath
+.project
+bin/
+*.launch
+
+# Temporary files and crash diagnostics
+*.tmp
+*.temp
+*.bak
+*.orig
+*.rej
+*~
+*.swp
+*.swo
+hs_err_*.log
+replay_*.log
+*.hprof
+*.jfr
+VERIFICATION.md
+
+# Operating system files
+.DS_Store
+Thumbs.db
+Desktop.ini

@@ -1,0 +1,10 @@
+Anri Logger includes H2 MVStore 2.3.232 (com.h2database:h2-mvstore).
+Project: https://github.com/h2database/h2database
+H2 is dual licensed under MPL 2.0 or EPL 1.0: https://h2database.com/html/license.html
+The mod embeds the H2 dependency JAR.
+Anri Logger source is licensed under the MIT License; third-party dependencies retain their own licenses.
+
+The Gradle Wrapper scripts and JAR are provided by Gradle under the Apache License 2.0.
+Project: https://github.com/gradle/gradle
+License: https://www.apache.org/licenses/LICENSE-2.0
+The original copyright and license notices in the Wrapper scripts are retained.

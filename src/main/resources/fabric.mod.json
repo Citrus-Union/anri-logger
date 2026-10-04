@@ -1,0 +1,14 @@
+{
+  "schemaVersion": 1,
+  "id": "anri-logger",
+  "version": "${version}",
+  "name": "Anri Logger",
+  "icon": "assets/anri-logger/icon-constructivist.png",
+  "description": "Single-file player block and container audit history. Server-side, logging only.",
+  "authors": ["Anri"],
+  "license": "MIT",
+  "environment": "*",
+  "entrypoints": { "main": ["com.anrilogger.AnriLogger"] },
+  "mixins": ["anri-logger.mixins.json"],
+  "depends": { "fabricloader": ">=${loader}", "minecraft": "${minecraft}", "java": ">=${java}", "fabric-api": "*" }
+}

@@ -1,0 +1,7 @@
+{
+  "required": true,
+  "package": "com.anrilogger.mixin",
+  "compatibilityLevel": "JAVA_${java}",
+  "mixins": ["LevelMixin", "GameModeMixin", "BlockItemMixin", "LevelTicksMixin", "EntityMixin", "ServerLevelMixin", "ExplosionMixin", "CompoundContainerAccessor", "ContainerMenuMixin", "BlockEventMixin", "PistonMixin", "BlockCollisionMixin", "LecternMenuMixin"],
+  "injectors": { "defaultRequire": 1 }
+}
