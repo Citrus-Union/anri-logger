@@ -118,21 +118,12 @@ config/
 | `queryCooldownMillis` | 非负整数；限制同一来源的普通 search/page/show/status/sessions 查询间隔与并发。检查模式、坐标 inspect 和 container 查询不受此限制 |
 | `maxTrackedScheduledTicks` | 100–1000000；每个调度器或维度的延迟因果追踪上限 |
 
-数据库打不开或配置无效时拒绝继续启动；运行中存储线程失败会在控制台报错并停服，避免长时间继续运行却没有审计记录。正常停服会排空队列、提交、同步并关闭数据库。硬断电/强杀可能丢失尚未提交的末尾批次；已提交历史可从一致的版本恢复。查询在数据库线程执行，返回结果时切回服务器线程。
-
-查询按队列顺序读取，能看到排在其前面、尚未定时提交的记录；每次查询不再额外强制磁盘同步。连续检查使用新的查询快照，翻页仍保持原快照。取消检查冷却不代表磁盘繁忙时没有等待时间；有界队列、扫描预算与错误反馈仍然生效。
 
 ## 单文件、小体积存储
 
 使用内嵌 **H2 MVStore 2.3.232** 的直接映射 API，不启动 SQL/JDBC 引擎。schema 2 将事件按最多 2048 条、估算约 1 MiB 分块，使用 DEFLATE 高压缩；时间、tick、坐标和前驱编号采用差分与变长整数编码，规范 UUID 保存为 16 字节。完整物品组件仍保留，超大单条记录可独占一块。
 
 字典局限于每个压缩块，不再把每个因果 UUID、独有物品详情永久复制到双向全局字典。位置索引使用世界/维度短编号和二进制坐标；位置/玩家索引只保留最新事件编号，块中保留前驱链接。尾块在定时提交时写入，未满块可在之后继续填充。所有映射统一提交到 `history.db`，事件和索引保持原子一致；读取使用有界的解压块缓存。
-
-旧版每 512 个任务就提交，且关闭后台提交后没有补上主动碎片整理。新版减少高吞吐量时的小批次提交，运行时每约一分钟尝试回收低利用率旧块，保留 MVStore 默认的旧页保留窗口；正常停服时另做约一秒预算的文件整理。这些预算不保证慢磁盘上的严格耗时上限；运行中的空闲空间会用于后续写入，文件不一定立即缩短。
-
-合成数据测试：1 万条重复物品记录约 12 KiB；1 万条不同坐标和不同因果链记录约 252 KiB。10 万条高吞吐量模拟负载中，新文件相对旧实现缩小约 92%–95%，**未计入新增的 10 次连带上限**。同样强制每 512 条提交时收益较小，说明提交频率和碎片也显著影响文件大小。测试方法与断言见 [CompactStorageTest](src/test/java/com/anrilogger/store/CompactStorageTest.java)。未取得真实 180G 数据库，不能承诺它会按相同比例缩小。
-
-没有自动删除历史、回滚存档或外部压缩文件。数据库持续积累事件。
 
 ## 回档与备份
 
@@ -159,13 +150,6 @@ config/
 ```
 
 Linux/macOS 首次构建先执行 `chmod +x gradlew`，再使用 `./gradlew`。构建锁定 Java 25、Gradle 9.7.1、Fabric Loom 1.17.20、Stonecutter 0.9.8。buildAndCollect 汇总产物在 `build/libs/`。测试模组放在独立的 gametest 源集，不会进入发行 JAR。
-
-将本目录作为 GitHub 仓库根目录，提交 `src/`、`docs/`、`.github/`、`gradle/`、Gradle Wrapper 和构建配置文件。`.gitignore` 排除构建缓存、发行产物、测试世界、日志、数据库和本地环境配置；`gradle-wrapper.jar` 是可复现构建所需的文件，需提交。GitHub Actions 在 push 和 pull request 时运行构建、单元测试和游戏测试，并保存 JAR 产物。
-
-单元测试报告生成于 `versions/26.1.2/build/reports/tests/test/index.html`。GameTest 运行目录为 `versions/26.1.2/build/run/gameTest/`，可以检查其 `config/anri-logger/` 中的真实单文件数据库。
-
-设计参考：[Ledger](https://www.quiltservertools.net/Ledger/latest/)、[MVStore 文件格式与恢复机制](https://h2database.github.io/html/mvstore.html)、[Fabric 26.1 迁移说明](https://www.fabricmc.net/2026/03/14/261.html)。
-
 
 ## Stonecutter 多版本开发
 
