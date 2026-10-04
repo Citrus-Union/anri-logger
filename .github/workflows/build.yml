@@ -27,3 +27,39 @@ jobs:
           name: anri-logger
           path: build/libs/*.jar
           if-no-files-found: error
+
+  release:
+    if: github.event_name == 'push' && startsWith(github.ref, 'refs/tags/v')
+    needs: build
+    runs-on: ubuntu-24.04
+    permissions:
+      contents: write
+    env:
+      GH_TOKEN: ${{ github.token }}
+      GH_REPO: ${{ github.repository }}
+      RELEASE_TAG: ${{ github.ref_name }}
+    steps:
+      - name: checkout release source
+        uses: actions/checkout@v6
+      - name: download tested JARs
+        uses: actions/download-artifact@v8
+        with:
+          name: anri-logger
+          path: build/libs
+      - name: validate release and prepare checksums
+        shell: bash
+        run: |
+          version=$(sed -n 's/^mod.version = "\(.*\)"$/\1/p' stonecutter.properties.toml)
+          test "$RELEASE_TAG" = "v$version"
+          test -s "build/libs/anri-logger-${version}+mc26.1.2.jar"
+          test -s "build/libs/anri-logger-${version}+mc26.1.2-sources.jar"
+          test -s "docs/releases/${version}.md"
+          (cd build/libs && sha256sum *.jar > SHA256SUMS.txt)
+      - name: publish release with tested assets
+        shell: bash
+        run: |
+          version="${RELEASE_TAG#v}"
+          gh release create "$RELEASE_TAG" build/libs/*.jar build/libs/SHA256SUMS.txt \
+            --verify-tag --latest \
+            --title "Anri Logger ${version} · Minecraft 26.1.2" \
+            --notes-file "docs/releases/${version}.md"
